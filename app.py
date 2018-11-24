@@ -22,9 +22,9 @@ app = dash.Dash(__name__, server=server)
 
 # Put your Dash code here
 
-from flask_sqlalchemy import SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-db = SQLAlchemy()
+import psycopg2
+DATABASE_URL = os.environ.get('DATABASE_URL', "postgres://mzdscoykshzgbv:189b1d7b220b1c4c22fbee4fabb30042e5cca2be6abb00a526e568ca9098c8b8@ec2-54-163-230-178.compute-1.amazonaws.com:5432/dcmbq4go3nl1bs")
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 print("here!!")
 
 
