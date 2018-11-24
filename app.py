@@ -25,8 +25,16 @@ app = dash.Dash(__name__, server=server)
 # Put your Dash code here
 
 import sqlalchemy
+import pandas as pd
 #conn = sqlalchemy.create_engine(os.environ['DATABASE_URL'])
-conn = sqlalchemy.create_engine(temp_db_link)
+#   conn = sqlalchemy.create_engine(temp_db_link)
+#   x = conn.execute('SELECT * FROM player_ids')
+
+#   conn.execute("DELETE FROM player_ids WHERE player_ids.player_id=1;" )
+#   conn.execute("INSERT INTO player_ids (player_name) VALUES('test2');")
+#   df = pd.read_sql(sql='SELECT * FROM player_ids;', 
+#                    con=conn)
+#   print(df)
 
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
@@ -34,19 +42,10 @@ app.layout = html.Div(children=[
     html.Div(children='''
         Dash: A web application framework for Python.
     '''),
-
-    dcc.Graph(
-        id='example-graph',
-        figure={
-            'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-            ],
-            'layout': {
-                'title': 'Dash Data Visualization'
-            }
-        }
-    )
+    dcc.Input(
+        placeholder='Enter a value...',
+        type='text',
+        value='')
 ])
 
 # Run the Dash app
