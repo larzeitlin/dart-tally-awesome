@@ -21,6 +21,13 @@ app = dash.Dash(__name__, server=server)
 
 
 # Put your Dash code here
+
+from flask_sqlalchemy import SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+db = SQLAlchemy()
+print("here!!")
+
+
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
 
