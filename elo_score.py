@@ -31,4 +31,4 @@ def make_elo_scores_df(game_log_df, player_ids_df, K=20):
         else:
             elo_scores = calculate_new_elo_scores(elo_scores, day_games, K)
             out_df.at[index] = elo_scores
-    print(out_df)
+    return(out_df)

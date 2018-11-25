@@ -10,9 +10,11 @@ import dash_table
 from dash.dependencies import Input, Output, State, Event
 import dash_core_components as dcc
 import dash_html_components as html
+import plotly.graph_objs as go
 import sqlalchemy
 import pandas as pd
 from datetime import datetime
+import elo_score
 
 server = flask.Flask(__name__)
 server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
@@ -21,7 +23,8 @@ app = dash.Dash(__name__, server=server)
 conn = sqlalchemy.create_engine(temp_db_link)
 init_player_df = pd.read_sql(sql='SELECT * FROM player_ids;', con=conn)
 init_game_log_df = pd.read_sql(sql='SELECT * FROM game_log;', con=conn, parse_dates=['created_at'])
-#init_game_log_df['created_at'] = init_game_log_df['created_at'].dt.strftime("%D, %r")
+player_dict = init_player_df.set_index("player_id").to_dict('index')
+elo_score_df = elo_score.make_elo_scores_df(init_game_log_df, init_player_df, K=20)
 app.layout = html.Div(children=[
 
     html.H1(children="Dart-Tally-Awesome",
@@ -67,6 +70,19 @@ app.layout = html.Div(children=[
             html.Button("Submit", 
                         id='add_new_player_button')])],
         style={"textAlign" : "center"}),
+
+
+    html.Div(children=[
+        dcc.Graph(id='timeseries',
+            figure=go.Figure(
+                data = [go.Scatter(x=elo_score_df.index, 
+                                   y=elo_score_df[i],
+                                   name=player_dict[i]['player_name']) 
+                        for i in list(elo_score_df)],
+                
+                layout = go.Layout(hovermode='closest')))],
+        style={'textAlign' : 'center'}),
+
     html.Div(children=[
         html.H4("League Table"),
         dash_table.DataTable(id='player_table',
