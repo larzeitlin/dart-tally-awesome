@@ -7,17 +7,21 @@ def expected_score(RA, RB):
     EA = 1 / (1 +  (math.pow(10, ((RB - RA)/400))))
     return(EA)
 
-def calculate_new_elo_scores(elo_scores, day_games, K=20):
+def calculate_new_elo_scores(elo_scores, day_games, K):
     for index, row in day_games.iterrows():
+        winner_norm_score = 1
+        looser_norm_score = row["looser_score"] / row["winner_score"]
         winner_exp = expected_score(elo_scores[row["winner_id"]], row['looser_id'])
         looser_exp = 1 - winner_exp
-        winner_new_elo = elo_scores[row['winner_id']] + K * (row['winner_score'] - winner_exp)
-        looser_new_elo = elo_scores[row['looser_id']] + K * (row['looser_score'] - looser_exp)
+        winner_new_elo = elo_scores[row['winner_id']] + K * (winner_norm_score - winner_exp)
+        looser_new_elo = elo_scores[row['looser_id']] + K * (looser_norm_score - looser_exp)
         elo_scores[row['winner_id']] = winner_new_elo
         elo_scores[row['looser_id']] = looser_new_elo
     return(elo_scores)
 
-def make_elo_scores_df(game_log_df, player_ids_df, K=20):
+def make_elo_scores_df(game_log_df, player_ids_df, K):
+    if game_log_df.shape[0] == 0:
+        return(pd.DataFrame())
     start_date = min(game_log_df['created_at'] - timedelta(days=1)).date()
     end_date = max(game_log_df['created_at'] + timedelta(days=1)).date()
     date_range = [start_date + timedelta(days=x) for x in range(0, (end_date - start_date).days)]
