@@ -29,6 +29,8 @@ def count_wld(game_log_df, player_id):
     qu = "((winner_id == {}) | (looser_id == {}))".format(player_id, player_id)
 
     df = game_log_df.query(qu)
+    if df.shape[0] == 0:
+        return([0, 0, 1])
     df['wld'] = df.apply(lambda x : wld_function(x, player_id), axis=1)
     WLD_list = df['wld'].tolist()
     WLD = [WLD_list.count('W'), WLD_list.count('L'), WLD_list.count('D')]
